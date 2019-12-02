@@ -23,4 +23,4 @@
 ///
 /// store.subscribe(listener);
 /// ```
-pub type Subscription<State> = dyn Fn(&State) + 'static;
+pub type Subscription<State> = dyn FnMut(&State) + 'static;

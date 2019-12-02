@@ -115,9 +115,9 @@ impl<State, Action> Store<State, Action> {
     }
 
     /// Runs all subscriptions.
-    fn dispatch_subscriptions(&self) {
-        for subscription in &self.subscriptions {
-            subscription(self.state());
+    fn dispatch_subscriptions(&mut self) {
+        for subscription in &mut self.subscriptions {
+            subscription(&self.state);
         }
     }
 
@@ -149,7 +149,7 @@ impl<State, Action> Store<State, Action> {
     /// ```
     pub fn subscribe<CB>(&mut self, callback: CB)
     where
-        CB: 'static + Fn(&State),
+        CB: FnMut(&State) + 'static,
     {
         self.subscriptions.push(Box::new(callback));
     }
