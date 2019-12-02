@@ -17,10 +17,10 @@
 /// #
 /// let mut store = Store::new(reducer, initial_state);
 ///
-/// let listener: Subscription<State> = |state: &State| {
+/// let listener = |state: &State| {
 ///     println!("Something changed! New value: {}", state);
 /// };
 ///
 /// store.subscribe(listener);
 /// ```
-pub type Subscription<State> = fn(&State);
+pub type Subscription<State> = dyn Fn(&State) + 'static;

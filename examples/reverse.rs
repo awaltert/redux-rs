@@ -1,4 +1,4 @@
-use redux_rs::{Store, Subscription};
+use redux_rs::{Store};
 
 // A simple counter.
 type State = i8;
@@ -6,14 +6,14 @@ type State = i8;
 // Increment and decrement actions for the counter.
 enum Action {
     Increment,
-    Decrement
+    Decrement,
 }
 
 // Reducer for the counter.
 fn reducer(state: &State, action: &Action) -> State {
     match action {
         Action::Increment => state + 1,
-        Action::Decrement => state - 1
+        Action::Decrement => state - 1,
     }
 }
 
@@ -21,7 +21,7 @@ fn reducer(state: &State, action: &Action) -> State {
 fn reverse_middleware(_: &mut Store<State, Action>, action: Action) -> Option<Action> {
     match action {
         Action::Increment => Some(Action::Decrement),
-        Action::Decrement => Some(Action::Increment)
+        Action::Decrement => Some(Action::Increment),
     }
 }
 
@@ -33,7 +33,7 @@ fn main() {
     store.add_middleware(reverse_middleware);
 
     // Define listener.
-    let listener: Subscription<State> = |state: &State| {
+    let listener = |state: &State| {
         println!("Counter changed! New value: {}", state);
     };
 

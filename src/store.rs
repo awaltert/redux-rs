@@ -7,7 +7,7 @@ pub struct Store<State, Action> {
     reducer: Reducer<State, Action>,
     state: State,
     middleware: Vec<Middleware<State, Action>>,
-    subscriptions: Vec<Subscription<State>>
+    subscriptions: Vec<Box<Subscription<State>>>,
 }
 
 impl<State, Action> Store<State, Action> {
@@ -39,7 +39,7 @@ impl<State, Action> Store<State, Action> {
             reducer,
             state: initial_state,
             middleware: Vec::new(),
-            subscriptions: Vec::new()
+            subscriptions: Vec::new(),
         }
     }
 
@@ -141,14 +141,17 @@ impl<State, Action> Store<State, Action> {
     ///
     /// let mut store = Store::new(reducer, initial_state);
     ///
-    /// let listener: Subscription<State> = |state: &State| {
+    /// let listener = |state: &State| {
     ///     println!("Something changed! New value: {}", state);
     /// };
     ///
     /// store.subscribe(listener);
     /// ```
-    pub fn subscribe(&mut self, callback: Subscription<State>) {
-        self.subscriptions.push(callback);
+    pub fn subscribe<CB>(&mut self, callback: CB)
+    where
+        CB: 'static + Fn(&State),
+    {
+        self.subscriptions.push(Box::new(callback));
     }
 
     /// Adds a custom middleware to the store.
