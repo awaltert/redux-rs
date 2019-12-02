@@ -1,4 +1,4 @@
-use redux_rs::{Store};
+use redux_rs::Store;
 
 #[derive(Default)]
 // This is a state. It describes an immutable object.

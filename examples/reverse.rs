@@ -1,4 +1,4 @@
-use redux_rs::{Store};
+use redux_rs::Store;
 
 // A simple counter.
 type State = i8;
