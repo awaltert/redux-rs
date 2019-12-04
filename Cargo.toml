@@ -1,6 +1,6 @@
 [package]
 name = "redux-rs"
-version = "0.2.0"
+version = "0.2.1"
 description = "A Rust implementation of Redux."
 authors = ["Jeroen Vervaeke <jeroen@vervaeke.nu>", "Jan Baudisch <dev@baudisch.xyz>"]
 license = "MIT"
@@ -18,3 +18,4 @@ default = ["std"]
 std = []
 
 [dependencies]
+generational-arena = "0.2"

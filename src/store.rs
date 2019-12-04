@@ -1,3 +1,5 @@
+use generational_arena::{Arena, Index};
+
 use crate::{Middleware, Reducer, Subscription, Vec};
 
 /// A container holding a state and providing the possibility to dispatch actions.
@@ -7,7 +9,7 @@ pub struct Store<State, Action> {
     reducer: Reducer<State, Action>,
     state: State,
     middleware: Vec<Middleware<State, Action>>,
-    subscriptions: Vec<Box<Subscription<State>>>,
+    subscriptions: Arena<Box<Subscription<State>>>,
 }
 
 impl<State, Action> Store<State, Action> {
@@ -39,7 +41,7 @@ impl<State, Action> Store<State, Action> {
             reducer,
             state: initial_state,
             middleware: Vec::new(),
-            subscriptions: Vec::new(),
+            subscriptions: Arena::new(),
         }
     }
 
@@ -116,7 +118,7 @@ impl<State, Action> Store<State, Action> {
 
     /// Runs all subscriptions.
     fn dispatch_subscriptions(&mut self) {
-        for subscription in &mut self.subscriptions {
+        for (_, subscription) in &mut self.subscriptions {
             subscription(&self.state);
         }
     }
@@ -147,11 +149,16 @@ impl<State, Action> Store<State, Action> {
     ///
     /// store.subscribe(listener);
     /// ```
-    pub fn subscribe<CB>(&mut self, callback: CB)
+    pub fn subscribe<CB>(&mut self, callback: CB) -> Index
     where
         CB: FnMut(&State) + 'static,
     {
-        self.subscriptions.push(Box::new(callback));
+        self.subscriptions.insert(Box::new(callback))
+    }
+
+    /// Unsubscribe previously subscribed callback from the store.
+    pub fn unsubscribe(&mut self, callback_index: Index) {
+        self.subscriptions.remove(callback_index);
     }
 
     /// Adds a custom middleware to the store.
